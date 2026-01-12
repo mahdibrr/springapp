@@ -1,0 +1,100 @@
+Cahier des Charges – Système de
+
+Réservation de Salles
+
+Défintion :
+Une application de réservation de salles architecturée sous forme de microservices. L&#39;objectif est
+de fournir une solution scalable, sécurisée et maintenable pour la gestion et la réservation des
+espaces (salles de cours, réunions, clubs).
+
+Contexte et objectifs
+Contexte: Besoin d&#39;un portail central pour réserver des salles, réduire les conflits et automatiser
+les approbations.
+Principaux objectifs:
+ Permettre à un utilisateur authentifié de créer une réservation en moins de 2 minutes.
+ Assurer aucune double réservation sur des créneaux approuvés.
+ Fournir des APIs documentées et testées avec OpenAPI et tests d&#39;intégration.
+ Prévoir une solution temps réel pour notifications et mises à jour du calendrier.
+
+Architecture technique (vue d&#39;ensemble)
+L&#39;architecture est organisée autour de quatre microservices principaux exposant des API REST,
+gérés par un API Gateway. Chaque microservice possède sa propre base de données pour garantir
+le principe de l&#39;autonomie de service et éviter le couplage fort.
+Microservices proposés:
+ auth-service: gestion des utilisateurs, authentification et autorisation (JWT, gestion des rôles).
+ room-service: gestion du catalogue des salles, équipements, capacités et disponibilités.
+ booking-service: logique métier des réservations, règles anti-chevauchement, historique et
+état des réservations.
+ notification-service: envoi d&#39;emails, push et diffusion temps réel via WebSocket/SSE.
+Composants additionnels: API Gateway, Configuration centralisée, Observabilité (logs, metrics),
+Service discovery (optionnel).
+
+Diagramme de classe – système de réservation d’une salle :
+
+Diagramme illustrant le flux lors de la réservation d’une salle.
+
+Diagramme de séquence - Création d&#39;une réservation :
+
+Périmètre fonctionnel détaillé
+ Authentification et gestion des comptes (auth-service): inscriptions (option), connexion,
+réinitialisation de mot de passe, gestion des rôles.
+ Gestion des salles (room-service): CRUD salles, gestion des équipements, filtres et API
+d&#39;occupation.
+ Gestion des réservations (booking-service): création, modification, annulation, approbation,
+validations métier et traitement des conflits.
+ Notifications (notification-service): envoi d&#39;email, notifications temps réel et gestion des files
+d&#39;événements.
+
+Exigences non-fonctionnelles
+ Performance: p95 &lt; 400 ms pour endpoints critiques; mise en cache quand nécessaire.
+ Sécurité: JWT RS256, chiffrement des secrets, politiques CORS, rate limiting sur /auth.
+ Disponibilité: déploiement en conteneurs, santé des services, réplication DB selon
+environnement.
+ Observabilité: logs structurés, traces distribuées, métriques exposées pour Prometheus.
+ Scalabilité: chaque microservice scalable indépendamment; stateless pour services web.
+
+Modèle de données (synthèse)
+Chaque microservice possède son schéma et ses tables. Extraits principaux:
+ room-service: Room(id, name, capacity, location, equipments), RoomAvailability(...)
+ booking-service: Booking(id, roomId, userId, startAt, endAt, participants, status, createdAt,
+decidedBy, decidedAt)
+ auth-service: User(id, email, passwordHash, fullName, role, enabled, createdAt)
+ notification-service: Outbox/EventStore (pour fiabilité) + DeliveryStatus
+
+Contrats d&#39;API (exemples)
+POST /auth/login -&gt; 200 { token, user:{id,email,role,fullName} }
+GET /rooms?query=&amp;minCapacity=&amp;equip=&amp;page=&amp;size= -&gt; 200 Page&lt;Room&gt;
+POST /bookings -&gt; 201 { id, status: PENDING } (booking-service)
+PATCH /bookings/{id}/approve -&gt; 200 { id, status: APPROVED }
+GET /bookings?roomId=&amp;from=&amp;to=&amp;status=&amp;page=&amp;size= -&gt; 200 Page&lt;Booking&gt;
+
+Sécurité et gestion des accès
+Authentification: JWT signés avec RS256. API Gateway valide les tokens et propage l&#39;identité
+aux services.
+
+Autorisation: rôles (USER, ADMIN). Les règles sensibles sont appliquées côté booking-service
+et room-service.
+
+Déploiement &amp; CI/CD
+ Conteneurisation: Docker pour chaque microservice; images versionnées.
+ CI/CD: GitHub Actions ou GitLab CI pour build, tests, scans de sécurité et déploiement.
+ Configuration: stocker secrets dans Vault ou gestionnaire de secrets du cloud.
+
+Tests, monitoring et SLA
+Tests: unitaires, intégration, contract testing (pact), e2e (Cypress).
+Monitoring: exporter métriques prometheus, alerting rules pour erreurs élevées, dashboards
+Grafana.
+
+Feuille de route et jalons (suggestion)
+ Sprint 1 (setup): API Gateway, auth-service, CI &amp; infra dev.
+ Sprint 2: room-service CRUD, DB schema, basic APIs.
+ Sprint 3: booking-service, anti-chevauchement, transactions.
+ Sprint 4: notification-service (email/WebSocket), integration, OpenAPI.
+ Sprint 5: polish, tests e2e, démo et documentation.
+
+Risques et mitigation
+ Complexité temporelle et de synchronisation entre services: prévoir patterns comme outbox
+et retries.
+ Conflits de réservation concurrente: gestion transactionnelle et verrous optimistes ou
+mécanisme de réservation atomique.
+ Dépassement de périmètre: prioriser MVP sans temps réel si délai serré.

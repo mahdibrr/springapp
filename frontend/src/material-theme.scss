@@ -1,0 +1,93 @@
+// SESAME Custom Angular Material Theme
+// Primary: #00478F (Blue), Accent: #22C0C2 (Teal)
+
+@use '@angular/material' as mat;
+
+// Define SESAME custom color palettes
+$sesame-primary-palette: (
+  50: #e0eaf3,
+  100: #b3cbe1,
+  200: #80a8cd,
+  300: #4d85b9,
+  400: #266aaa,
+  500: #00478F,  // Primary SESAME Blue
+  600: #004087,
+  700: #00377c,
+  800: #002f72,
+  900: #002060,
+  A100: #8fb4ff,
+  A200: #5c93ff,
+  A400: #2972ff,
+  A700: #0f62ff,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: rgba(0, 0, 0, 0.87),
+    A400: white,
+    A700: white,
+  )
+);
+
+$sesame-accent-palette: (
+  50: #e4f8f8,
+  100: #bcedee,
+  200: #90e1e2,
+  300: #64d5d6,
+  400: #43ccce,
+  500: #22C0C2,  // SESAME Teal
+  600: #1eb0b2,
+  700: #199d9f,
+  800: #148b8d,
+  900: #0c6b6d,
+  A100: #a0ffff,
+  A200: #6dffff,
+  A400: #3affff,
+  A700: #21ffff,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: rgba(0, 0, 0, 0.87),
+    500: rgba(0, 0, 0, 0.87),
+    600: rgba(0, 0, 0, 0.87),
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: rgba(0, 0, 0, 0.87),
+    A400: rgba(0, 0, 0, 0.87),
+    A700: rgba(0, 0, 0, 0.87),
+  )
+);
+
+// Apply the SESAME theme using Angular Material's theme mixin
+html {
+  height: 100%;
+  @include mat.theme((
+    color: (
+      primary: $sesame-primary-palette,
+      tertiary: $sesame-accent-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
