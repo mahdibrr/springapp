@@ -44,18 +44,19 @@ import { User } from '../core/models/auth.models';
           <!-- Logo -->
           <a routerLink="/dashboard" class="logo-link">
             <img src="Logo-SESAME-png.png" alt="SESAME Logo" class="logo-image" />
-            <span class="logo-text">Room Reservation</span>
           </a>
+        </div>
+
+        <!-- Center Title -->
+        <div class="header-center">
+          <span class="center-title">Room Reservation</span>
         </div>
 
         <div class="header-right">
           <!-- User info -->
           <div class="user-info" *ngIf="currentUser()">
             <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
-              <div class="user-avatar">
-                {{ getUserInitials() }}
-              </div>
-              <span class="user-name">{{ currentUser()?.firstname }} {{ currentUser()?.lastname }}</span>
+              <span class="profile-link">Profile</span>
               <mat-icon>arrow_drop_down</mat-icon>
             </button>
             <mat-menu #userMenu="matMenu">
@@ -118,24 +119,38 @@ import { User } from '../core/models/auth.models';
       left: 0;
       right: 0;
       height: var(--header-height);
-      background-color: var(--sesame-primary);
-      color: white;
+      background-color: white;
+      color: black;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 1rem;
       z-index: 1000;
-      box-shadow: var(--shadow-md);
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .header-left {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex: 1;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .center-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      white-space: nowrap;
     }
 
     .menu-toggle {
-      color: white;
+      color: black;
     }
 
     .logo-link {
@@ -143,23 +158,19 @@ import { User } from '../core/models/auth.models';
       align-items: center;
       gap: 0.75rem;
       text-decoration: none;
-      color: white;
+      color: black;
     }
 
     .logo-image {
-      height: 40px;
+      height: 50px;
       width: auto;
-    }
-
-    .logo-text {
-      font-size: 1.25rem;
-      font-weight: 600;
-      white-space: nowrap;
     }
 
     .header-right {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex: 1;
     }
 
     /* User Menu Styles */
@@ -167,7 +178,7 @@ import { User } from '../core/models/auth.models';
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: white;
+      color: black;
     }
 
     .user-avatar {
@@ -179,6 +190,11 @@ import { User } from '../core/models/auth.models';
       align-items: center;
       justify-content: center;
       font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .profile-link {
+      font-weight: 500;
       font-size: 0.875rem;
     }
 
@@ -226,6 +242,7 @@ import { User } from '../core/models/auth.models';
       display: flex;
       flex: 1;
       margin-top: var(--header-height);
+      position: relative;
     }
 
     /* Sidebar Overlay (mobile) */
@@ -272,6 +289,9 @@ import { User } from '../core/models/auth.models';
       padding: 1.5rem;
       min-height: calc(100vh - var(--header-height));
       width: 100%;
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
     }
 
     /* Desktop Styles */
@@ -280,7 +300,7 @@ import { User } from '../core/models/auth.models';
         display: none;
       }
 
-      .user-name {
+      .profile-link {
         display: inline;
       }
 
@@ -300,7 +320,7 @@ import { User } from '../core/models/auth.models';
 
     /* Large Desktop */
     @media (min-width: 1024px) {
-      .logo-text {
+      .center-title {
         font-size: 1.375rem;
       }
 
