@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -341,7 +341,8 @@ export class MyBookingsComponent implements OnInit {
   constructor(
     private bookingService: BookingService,
     private notificationService: NotificationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.checkScreenSize();
   }
@@ -365,11 +366,13 @@ export class MyBookingsComponent implements OnInit {
       next: (data) => {
         this.bookings = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.notificationService.error('Failed to load bookings');
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

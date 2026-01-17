@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -260,7 +260,7 @@ export class DashboardComponent implements OnInit {
   stats: UserDashboardStats | null = null;
   loading = true;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.loading = true;
@@ -269,18 +269,20 @@ export class DashboardComponent implements OnInit {
         next: (data) => {
           this.stats = data;
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to load stats', err);
           this.loading = false;
+          this.cdr.detectChanges();
         }
       });
   }
 
   formatDateTime(dateTimeStr: string): string {
     const date = new Date(dateTimeStr);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -289,7 +291,7 @@ export class DashboardComponent implements OnInit {
 
   formatTime(dateTimeStr: string): string {
     const date = new Date(dateTimeStr);
-    return date.toLocaleTimeString('en-US', { 
+    return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });

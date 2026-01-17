@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -366,7 +366,8 @@ export class RoomListComponent implements OnInit {
     private roomService: RoomService,
     private userService: UserService,
     private notificationService: NotificationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.checkScreenSize();
   }
@@ -391,11 +392,13 @@ export class RoomListComponent implements OnInit {
       next: (data) => {
         this.rooms = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.notificationService.error('Failed to load rooms');
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
